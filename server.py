@@ -12,7 +12,6 @@ from functools import partial
 
 PORT = int(os.environ.get("PORT", 8080))
 '''GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")'''
-GEMINI_API_KEY = "AIzaSyAMi5Y5b8j8OV5bvO0uL6eD5NLeUWP5m_I"
 SYSTEM_PROMPT_BASE = """You are the CivicGuide Election Assistant, an expert AI designed to help users understand election processes, voting systems, and civic duties globally.
 Your tone should be helpful, objective, highly educational, and easy to understand.
 You understand the nuances of various democratic systems worldwide (e.g., US Presidential, Indian Lok Sabha, UK Parliamentary, etc.) and can explain them clearly.
