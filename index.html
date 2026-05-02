@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An interactive assistant to help you understand the election process, timelines, and steps.">
+    <title>CivicGuide - Election Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>CivicGuide</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-tab="timeline">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span data-i18n="nav_timeline">Election Timeline</span>
+                </li>
+                <li data-tab="explorer">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span data-i18n="nav_explorer">Constituency Explorer</span>
+                </li>
+                <li data-tab="quiz">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <span data-i18n="nav_quiz">Quiz Challenge</span>
+                </li>
+                <li data-tab="assistant">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span data-i18n="nav_assistant">Smart Assistant</span>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="lang-selector-wrapper">
+                    <select id="language-selector" class="lang-select">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="es">Español (Spanish)</option>
+                        <option value="fr">Français (French)</option>
+                    </select>
+                </div>
+                <p>Powered by AI</p>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            <!-- Timeline View -->
+            <section id="timeline-view" class="view active">
+                <header class="view-header">
+                    <div class="header-badge" data-i18n="badge_timeline">Process Explorer</div>
+                    <h1 data-i18n="header_timeline_title">The Election Process</h1>
+                    <p data-i18n="header_timeline_desc">Understand the key steps in democratic elections through our interactive timeline.</p>
+                </header>
+                <div class="timeline-container">
+                    <div class="timeline-track"></div>
+                    <div id="timeline-steps">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Explorer View -->
+            <section id="explorer-view" class="view">
+                <header class="view-header">
+                    <div class="header-badge" data-i18n="badge_explorer">Historical Data</div>
+                    <h1 data-i18n="header_explorer_title">Constituency Results</h1>
+                    <p data-i18n="header_explorer_desc">Search for past election results by entering your constituency or area name.</p>
+                </header>
+                
+                <div class="explorer-container">
+                    <div class="explorer-form">
+                        <input type="text" id="explorer-constituency" placeholder="e.g. Varanasi, Wayanad..." autocomplete="off">
+                        <select id="explorer-type">
+                            <option value="Lok Sabha (General Election)" data-i18n="opt_loksabha">Lok Sabha (General Election)</option>
+                            <option value="State Assembly (Vidhan Sabha)" data-i18n="opt_vidhansabha">State Assembly (Vidhan Sabha)</option>
+                        </select>
+                        <button id="explorer-btn" class="action-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <span data-i18n="btn_search">Search</span>
+                        </button>
+                    </div>
+                    <div id="explorer-results" class="markdown-body">
+                        <!-- Populated by JS -->
+                        <div class="empty-state" data-i18n="explorer_empty">Enter an area above to view historical election results.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz View -->
+            <section id="quiz-view" class="view">
+                <header class="view-header">
+                    <div class="header-badge" data-i18n="badge_quiz">Knowledge Challenge</div>
+                    <h1 data-i18n="header_quiz_title">Test Your Civic Knowledge</h1>
+                    <p data-i18n="header_quiz_desc">Take a dynamic, AI-generated quiz to see how well you understand global election systems.</p>
+                </header>
+                
+                <div class="quiz-container">
+                    <!-- Start Screen -->
+                    <div id="quiz-start" class="quiz-box active">
+                        <h2 data-i18n="quiz_start_title">Ready to begin?</h2>
+                        <p data-i18n="quiz_start_desc">The AI will generate 5 random questions. Good luck!</p>
+                        <button id="btn-start-quiz" class="action-btn" style="margin: 20px auto; padding: 12px 30px;">
+                            <span data-i18n="btn_start_quiz">Start Quiz</span>
+                        </button>
+                    </div>
+
+                    <!-- Loading Screen -->
+                    <div id="quiz-loading" class="quiz-box" style="display:none;">
+                        <div class="typing-indicator" style="justify-content: center; margin: 20px 0;">
+                            <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                        </div>
+                        <p data-i18n="quiz_loading">Generating your questions...</p>
+                    </div>
+
+                    <!-- Question Screen -->
+                    <div id="quiz-question-box" class="quiz-box" style="display:none;">
+                        <div class="quiz-progress">
+                            <span id="quiz-counter">Question 1 of 5</span>
+                            <span id="quiz-score">Score: 0</span>
+                        </div>
+                        <h3 id="quiz-question-text" style="margin-bottom:20px;">Question goes here?</h3>
+                        <div id="quiz-options" class="quiz-options">
+                            <!-- Options injected by JS -->
+                        </div>
+                        <div id="quiz-feedback" class="quiz-feedback" style="display:none;"></div>
+                        <button id="btn-next-question" class="action-btn" style="display:none; margin-top:20px;">Next Question</button>
+                    </div>
+
+                    <!-- Result Screen -->
+                    <div id="quiz-results" class="quiz-box" style="display:none; text-align:center;">
+                        <h2 data-i18n="quiz_result_title">Quiz Complete!</h2>
+                        <div id="quiz-final-score" style="font-size: 3rem; font-weight:700; color:var(--primary-light); margin: 20px 0;">0/5</div>
+                        <p id="quiz-result-msg"></p>
+                        <button id="btn-restart-quiz" class="action-btn" style="margin: 20px auto;">
+                            <span data-i18n="btn_restart_quiz">Play Again</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assistant View -->
+            <section id="assistant-view" class="view">
+                <header class="view-header">
+                    <div class="header-badge" data-i18n="badge_assistant">AI Powered</div>
+                    <h1 data-i18n="header_assistant_title">Ask the Assistant</h1>
+                    <p data-i18n="header_assistant_desc">Have questions? Ask our AI assistant anything about election processes, voting systems, or civic duties worldwide.</p>
+                </header>
+                <div class="chat-container">
+                    <div class="chat-history" id="chat-history">
+                        <div class="message system-msg">
+                            <div class="avatar">
+                                <div class="logo-icon small"></div>
+                            </div>
+                            <div class="bubble">
+                                Hello! I'm the CivicGuide Assistant. How can I help you understand the election process today?
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button id="btn-scenario" class="action-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            Start Roleplay Scenario
+                        </button>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="input-wrapper">
+                            <input type="text" id="chat-input" placeholder="Ask about the Electoral College, primaries, deadlines..." autocomplete="off" />
+                            <button id="send-btn" aria-label="Send message">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
