@@ -5,158 +5,326 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="An interactive assistant to help you understand the election process, timelines, and steps.">
     <title>CivicGuide - Election Assistant</title>
+    <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="accessibility.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- [A11Y] Skip-to-main link — hidden until focused, lets keyboard users jump past nav -->
+    <style>
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 0;
+            background: var(--primary, #2b4acb);
+            color: #fff;
+            padding: 10px 18px;
+            font-weight: 600;
+            border-radius: 0 0 6px 0;
+            z-index: 10000;
+            transition: top 0.15s;
+        }
+        .skip-link:focus { top: 0; }
+    </style>
 </head>
 <body>
+    <!-- [A11Y] Skip navigation link for keyboard / screen-reader users -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <div id="app">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar">
-            <div class="logo">
-                <div class="logo-icon"></div>
+        <!-- [A11Y] role="navigation" + aria-label distinguishes this nav landmark -->
+        <nav class="sidebar" role="navigation" aria-label="Main navigation">
+            <!-- [A11Y] role="banner" communicates this is the site header / logo -->
+            <div class="logo" role="banner">
+                <!-- [A11Y] Decorative icon — hidden from AT -->
+                <div class="logo-icon" aria-hidden="true"></div>
                 <span>CivicGuide</span>
             </div>
-            <ul class="nav-links">
-                <li class="active" data-tab="timeline">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+
+            <!-- [A11Y] role="list" explicit (some resets remove list semantics from ul) -->
+            <ul class="nav-links" role="list" aria-label="App sections">
+                <!-- [A11Y] role="button" + tabindex + aria-current so AT reads active state -->
+                <li class="active"
+                    data-tab="timeline"
+                    role="button"
+                    tabindex="0"
+                    aria-current="page"
+                    aria-label="Election Timeline">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
                     <span data-i18n="nav_timeline">Election Timeline</span>
                 </li>
-                <li data-tab="explorer">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+
+                <li data-tab="explorer"
+                    role="button"
+                    tabindex="0"
+                    aria-label="Constituency Explorer">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true" focusable="false">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
                     <span data-i18n="nav_explorer">Constituency Explorer</span>
                 </li>
-                <li data-tab="quiz">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+
+                <li data-tab="quiz"
+                    role="button"
+                    tabindex="0"
+                    aria-label="Quiz Challenge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true" focusable="false">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
                     <span data-i18n="nav_quiz">Quiz Challenge</span>
                 </li>
-                <li data-tab="assistant">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+
+                <li data-tab="assistant"
+                    role="button"
+                    tabindex="0"
+                    aria-label="Smart Assistant">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true" focusable="false">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
                     <span data-i18n="nav_assistant">Smart Assistant</span>
                 </li>
             </ul>
+
             <div class="sidebar-footer">
                 <div class="lang-selector-wrapper">
-                    <select id="language-selector" class="lang-select">
+                    <!-- [A11Y] Explicit <label> linked via for/id -->
+                    <label for="language-selector" class="visually-hidden">Select language</label>
+                    <select id="language-selector" class="lang-select" aria-label="Select language">
                         <option value="en">English</option>
                         <option value="hi">हिंदी (Hindi)</option>
                         <option value="es">Español (Spanish)</option>
                         <option value="fr">Français (French)</option>
                     </select>
                 </div>
-                <p>Powered by AI</p>
+                <!-- [A11Y] aria-hidden — decorative tagline, not useful to AT -->
+                <p aria-hidden="true">Powered by AI</p>
             </div>
         </nav>
 
-        <!-- Main Content Area -->
-        <main class="content">
-            <!-- Timeline View -->
-            <section id="timeline-view" class="view active">
+        <!-- [A11Y] id="main-content" is the skip-link target; role="main" explicit for older AT -->
+        <main class="content" id="main-content" role="main">
+
+            <!-- ── Timeline View ─────────────────────────────────────── -->
+            <!-- [A11Y] aria-labelledby ties the section to its visible heading -->
+            <section id="timeline-view"
+                     class="view active"
+                     aria-labelledby="timeline-heading"
+                     aria-live="polite">
                 <header class="view-header">
-                    <div class="header-badge" data-i18n="badge_timeline">Process Explorer</div>
-                    <h1 data-i18n="header_timeline_title">The Election Process</h1>
+                    <!-- [A11Y] aria-hidden on badge — decorative label -->
+                    <div class="header-badge" aria-hidden="true" data-i18n="badge_timeline">Process Explorer</div>
+                    <h1 id="timeline-heading" data-i18n="header_timeline_title">The Election Process</h1>
                     <p data-i18n="header_timeline_desc">Understand the key steps in democratic elections through our interactive timeline.</p>
                 </header>
                 <div class="timeline-container">
-                    <div class="timeline-track"></div>
-                    <div id="timeline-steps">
+                    <div class="timeline-track" aria-hidden="true"></div>
+                    <!-- [A11Y] role="list" so steps read as a list in AT -->
+                    <div id="timeline-steps" role="list" aria-label="Election process steps">
                         <!-- Populated by JS -->
                     </div>
                 </div>
             </section>
 
-            <!-- Explorer View -->
-            <section id="explorer-view" class="view">
+            <!-- ── Explorer View ─────────────────────────────────────── -->
+            <section id="explorer-view"
+                     class="view"
+                     aria-labelledby="explorer-heading">
                 <header class="view-header">
-                    <div class="header-badge" data-i18n="badge_explorer">Historical Data</div>
-                    <h1 data-i18n="header_explorer_title">Constituency Results</h1>
+                    <div class="header-badge" aria-hidden="true" data-i18n="badge_explorer">Historical Data</div>
+                    <h1 id="explorer-heading" data-i18n="header_explorer_title">Constituency Results</h1>
                     <p data-i18n="header_explorer_desc">Search for past election results by entering your constituency or area name.</p>
                 </header>
-                
+
                 <div class="explorer-container">
-                    <div class="explorer-form">
-                        <input type="text" id="explorer-constituency" placeholder="e.g. Varanasi, Wayanad..." autocomplete="off">
-                        <select id="explorer-type">
+                    <!-- [A11Y] role="search" marks this as a search landmark -->
+                    <div class="explorer-form" role="search">
+                        <!-- [A11Y] Visible label via visually-hidden class (screen readers read it) -->
+                        <label for="explorer-constituency" class="visually-hidden">Constituency or area name</label>
+                        <input type="text"
+                               id="explorer-constituency"
+                               placeholder="e.g. Varanasi, Wayanad..."
+                               autocomplete="off"
+                               aria-label="Constituency or area name"
+                               aria-describedby="explorer-hint">
+                        <span id="explorer-hint" class="visually-hidden">
+                            Enter a constituency name and select the election type, then press Search.
+                        </span>
+
+                        <label for="explorer-type" class="visually-hidden">Election type</label>
+                        <select id="explorer-type" aria-label="Election type">
                             <option value="Lok Sabha (General Election)" data-i18n="opt_loksabha">Lok Sabha (General Election)</option>
                             <option value="State Assembly (Vidhan Sabha)" data-i18n="opt_vidhansabha">State Assembly (Vidhan Sabha)</option>
                         </select>
-                        <button id="explorer-btn" class="action-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+
+                        <button id="explorer-btn" class="action-btn" aria-label="Search constituency results">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round"
+                                 aria-hidden="true" focusable="false">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
                             <span data-i18n="btn_search">Search</span>
                         </button>
                     </div>
-                    <div id="explorer-results" class="markdown-body">
-                        <!-- Populated by JS -->
+
+                    <!-- [A11Y] aria-live="polite" announces results to AT when injected -->
+                    <div id="explorer-results"
+                         class="markdown-body"
+                         aria-live="polite"
+                         aria-atomic="true"
+                         role="region"
+                         aria-label="Search results">
                         <div class="empty-state" data-i18n="explorer_empty">Enter an area above to view historical election results.</div>
                     </div>
                 </div>
             </section>
 
-            <!-- Quiz View -->
-            <section id="quiz-view" class="view">
+            <!-- ── Quiz View ─────────────────────────────────────────── -->
+            <section id="quiz-view"
+                     class="view"
+                     aria-labelledby="quiz-heading">
                 <header class="view-header">
-                    <div class="header-badge" data-i18n="badge_quiz">Knowledge Challenge</div>
-                    <h1 data-i18n="header_quiz_title">Test Your Civic Knowledge</h1>
+                    <div class="header-badge" aria-hidden="true" data-i18n="badge_quiz">Knowledge Challenge</div>
+                    <h1 id="quiz-heading" data-i18n="header_quiz_title">Test Your Civic Knowledge</h1>
                     <p data-i18n="header_quiz_desc">Take a dynamic, AI-generated quiz to see how well you understand global election systems.</p>
                 </header>
-                
-                <div class="quiz-container">
+
+                <!-- [A11Y] aria-live="polite" so AT announces quiz state changes -->
+                <div class="quiz-container" aria-live="polite" aria-atomic="false">
+
                     <!-- Start Screen -->
-                    <div id="quiz-start" class="quiz-box active">
+                    <div id="quiz-start" class="quiz-box active" role="region" aria-label="Quiz start screen">
                         <h2 data-i18n="quiz_start_title">Ready to begin?</h2>
                         <p data-i18n="quiz_start_desc">The AI will generate 5 random questions. Good luck!</p>
-                        <button id="btn-start-quiz" class="action-btn" style="margin: 20px auto; padding: 12px 30px;">
+                        <button id="btn-start-quiz"
+                                class="action-btn"
+                                style="margin: 20px auto; padding: 12px 30px;"
+                                aria-label="Start the civic knowledge quiz">
                             <span data-i18n="btn_start_quiz">Start Quiz</span>
                         </button>
                     </div>
 
                     <!-- Loading Screen -->
-                    <div id="quiz-loading" class="quiz-box" style="display:none;">
-                        <div class="typing-indicator" style="justify-content: center; margin: 20px 0;">
-                            <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                    <div id="quiz-loading"
+                         class="quiz-box"
+                         style="display:none;"
+                         role="status"
+                         aria-live="polite"
+                         aria-label="Loading quiz questions">
+                        <!-- [A11Y] aria-hidden on decorative dots; status text is readable -->
+                        <div class="typing-indicator" style="justify-content: center; margin: 20px 0;" aria-hidden="true">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
                         </div>
                         <p data-i18n="quiz_loading">Generating your questions...</p>
                     </div>
 
                     <!-- Question Screen -->
-                    <div id="quiz-question-box" class="quiz-box" style="display:none;">
+                    <div id="quiz-question-box"
+                         class="quiz-box"
+                         style="display:none;"
+                         role="region"
+                         aria-label="Current quiz question">
                         <div class="quiz-progress">
-                            <span id="quiz-counter">Question 1 of 5</span>
-                            <span id="quiz-score">Score: 0</span>
+                            <!-- [A11Y] aria-live so progress updates are announced -->
+                            <span id="quiz-counter" aria-live="polite" aria-atomic="true">Question 1 of 5</span>
+                            <span id="quiz-score"   aria-live="polite" aria-atomic="true">Score: 0</span>
                         </div>
-                        <h3 id="quiz-question-text" style="margin-bottom:20px;">Question goes here?</h3>
-                        <div id="quiz-options" class="quiz-options">
+
+                        <!-- [A11Y] aria-live="assertive" so AT reads new question immediately -->
+                        <h3 id="quiz-question-text"
+                            style="margin-bottom:20px;"
+                            aria-live="assertive"
+                            aria-atomic="true">Question goes here?</h3>
+
+                        <!-- [A11Y] role="group" + aria-labelledby groups options under the question -->
+                        <div id="quiz-options"
+                             class="quiz-options"
+                             role="group"
+                             aria-labelledby="quiz-question-text">
                             <!-- Options injected by JS -->
                         </div>
-                        <div id="quiz-feedback" class="quiz-feedback" style="display:none;"></div>
-                        <button id="btn-next-question" class="action-btn" style="display:none; margin-top:20px;">Next Question</button>
+
+                        <!-- [A11Y] role="alert" so feedback is immediately announced after answering -->
+                        <div id="quiz-feedback"
+                             class="quiz-feedback"
+                             style="display:none;"
+                             role="alert"
+                             aria-live="assertive"
+                             aria-atomic="true"></div>
+
+                        <button id="btn-next-question"
+                                class="action-btn"
+                                style="display:none; margin-top:20px;"
+                                aria-label="Go to next question">Next Question</button>
                     </div>
 
                     <!-- Result Screen -->
-                    <div id="quiz-results" class="quiz-box" style="display:none; text-align:center;">
+                    <div id="quiz-results"
+                         class="quiz-box"
+                         style="display:none; text-align:center;"
+                         role="region"
+                         aria-label="Quiz results"
+                         aria-live="polite">
                         <h2 data-i18n="quiz_result_title">Quiz Complete!</h2>
-                        <div id="quiz-final-score" style="font-size: 3rem; font-weight:700; color:var(--primary-light); margin: 20px 0;">0/5</div>
-                        <p id="quiz-result-msg"></p>
-                        <button id="btn-restart-quiz" class="action-btn" style="margin: 20px auto;">
+                        <!-- [A11Y] aria-label provides readable context for the score number -->
+                        <div id="quiz-final-score"
+                             style="font-size: 3rem; font-weight:700; color:var(--primary-light); margin: 20px 0;"
+                             aria-label="Final score"
+                             aria-live="polite">0/5</div>
+                        <p id="quiz-result-msg" aria-live="polite"></p>
+                        <button id="btn-restart-quiz"
+                                class="action-btn"
+                                style="margin: 20px auto;"
+                                aria-label="Play the quiz again">
                             <span data-i18n="btn_restart_quiz">Play Again</span>
                         </button>
                     </div>
                 </div>
             </section>
 
-            <!-- Assistant View -->
-            <section id="assistant-view" class="view">
+            <!-- ── Assistant View ────────────────────────────────────── -->
+            <section id="assistant-view"
+                     class="view"
+                     aria-labelledby="assistant-heading">
                 <header class="view-header">
-                    <div class="header-badge" data-i18n="badge_assistant">AI Powered</div>
-                    <h1 data-i18n="header_assistant_title">Ask the Assistant</h1>
+                    <div class="header-badge" aria-hidden="true" data-i18n="badge_assistant">AI Powered</div>
+                    <h1 id="assistant-heading" data-i18n="header_assistant_title">Ask the Assistant</h1>
                     <p data-i18n="header_assistant_desc">Have questions? Ask our AI assistant anything about election processes, voting systems, or civic duties worldwide.</p>
                 </header>
+
                 <div class="chat-container">
-                    <div class="chat-history" id="chat-history">
+                    <!-- [A11Y] role="log" is semantically correct for chat: ordered, appended messages -->
+                    <div class="chat-history"
+                         id="chat-history"
+                         role="log"
+                         aria-label="Conversation with CivicGuide assistant"
+                         aria-live="polite"
+                         aria-relevant="additions"
+                         tabindex="0">
                         <div class="message system-msg">
-                            <div class="avatar">
+                            <div class="avatar" aria-hidden="true">
                                 <div class="logo-icon small"></div>
                             </div>
                             <div class="bubble">
@@ -164,19 +332,42 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="quick-actions">
-                        <button id="btn-scenario" class="action-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        <button id="btn-scenario"
+                                class="action-btn"
+                                aria-label="Start a roleplay civic scenario with the assistant">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round"
+                                 aria-hidden="true" focusable="false">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
                             Start Roleplay Scenario
                         </button>
                     </div>
 
-                    <div class="chat-input-area">
+                    <!-- [A11Y] role="form" + aria-label identifies the chat input region -->
+                    <div class="chat-input-area" role="form" aria-label="Send a message to the assistant">
                         <div class="input-wrapper">
-                            <input type="text" id="chat-input" placeholder="Ask about the Electoral College, primaries, deadlines..." autocomplete="off" />
+                            <label for="chat-input" class="visually-hidden">Your message</label>
+                            <input type="text"
+                                   id="chat-input"
+                                   placeholder="Ask about the Electoral College, primaries, deadlines..."
+                                   autocomplete="off"
+                                   aria-label="Type your question here"
+                                   aria-describedby="chat-input-hint" />
+                            <span id="chat-input-hint" class="visually-hidden">
+                                Press Enter or click the send button to submit your message.
+                            </span>
                             <button id="send-btn" aria-label="Send message">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round" stroke-linejoin="round"
+                                     aria-hidden="true" focusable="false">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -184,6 +375,29 @@
             </section>
         </main>
     </div>
+
     <script src="app.js"></script>
+
+    <!-- [A11Y] Keyboard support: allow Enter/Space to activate nav items (li[role=button]) -->
+    <script>
+        document.querySelectorAll('.nav-links li[role="button"]').forEach(li => {
+            li.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    li.click();
+                }
+            });
+        });
+
+        // Update aria-current when nav tab changes
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('.nav-links li[role="button"]').forEach(li => {
+                li.setAttribute('aria-current', li.classList.contains('active') ? 'page' : 'false');
+            });
+        });
+        document.querySelectorAll('.nav-links li').forEach(li => {
+            observer.observe(li, { attributes: true, attributeFilter: ['class'] });
+        });
+    </script>
 </body>
 </html>
